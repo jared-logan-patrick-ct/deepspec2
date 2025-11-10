@@ -1,0 +1,379 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://deepspec.dev/schemas/code-spec.schema.json",
+  "title": "Code Specification",
+  "description": "Universal code specification schema for representing program structure across languages",
+  "type": "object",
+  "required": ["spec_version", "language", "module", "file"],
+  "properties": {
+    "spec_version": {
+      "type": "string",
+      "description": "Version of the specification format",
+      "const": "1.0.0"
+    },
+    "language": {
+      "type": "string",
+      "description": "Programming language of the source code",
+      "enum": ["go", "python", "javascript", "typescript", "rust", "java", "c", "cpp"]
+    },
+    "language_version": {
+      "type": "string",
+      "description": "Minimum version of the language required"
+    },
+    "module": {
+      "type": "string",
+      "description": "Module/package/namespace name"
+    },
+    "file": {
+      "type": "string",
+      "description": "Source file name"
+    },
+    "description": {
+      "type": "string",
+      "description": "High-level description of file purpose"
+    },
+    "imports": {
+      "type": "array",
+      "description": "External dependencies and imports",
+      "items": {
+        "$ref": "#/$defs/import"
+      }
+    },
+    "types": {
+      "type": "array",
+      "description": "Type definitions (structs, classes, interfaces)",
+      "items": {
+        "$ref": "#/$defs/type_definition"
+      }
+    },
+    "functions": {
+      "type": "array",
+      "description": "Functions and methods",
+      "items": {
+        "$ref": "#/$defs/function"
+      }
+    },
+    "variables": {
+      "type": "array",
+      "description": "Package/module-level variables",
+      "items": {
+        "$ref": "#/$defs/variable"
+      }
+    },
+    "constants": {
+      "type": "array",
+      "description": "Package/module-level constants",
+      "items": {
+        "$ref": "#/$defs/constant"
+      }
+    },
+    "external_references": {
+      "type": "object",
+      "description": "Cross-file dependencies",
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    },
+    "metadata": {
+      "$ref": "#/$defs/metadata"
+    }
+  },
+  "$defs": {
+    "import": {
+      "type": "object",
+      "required": ["path"],
+      "properties": {
+        "path": {
+          "type": "string",
+          "description": "Import path or module name"
+        },
+        "alias": {
+          "type": ["string", "null"],
+          "description": "Import alias or shortname"
+        }
+      }
+    },
+    "type_definition": {
+      "type": "object",
+      "required": ["name", "kind", "visibility"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Type name"
+        },
+        "kind": {
+          "type": "string",
+          "enum": ["struct", "class", "interface", "enum", "union", "type_alias"],
+          "description": "Kind of type definition"
+        },
+        "visibility": {
+          "type": "string",
+          "enum": ["public", "private", "protected", "internal", "exported", "unexported"],
+          "description": "Access modifier"
+        },
+        "documentation": {
+          "type": "string",
+          "description": "Documentation comment"
+        },
+        "fields": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/field"
+          }
+        },
+        "methods": {
+          "type": "array",
+          "description": "Methods belonging to this type (for interfaces)",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "field": {
+      "type": "object",
+      "required": ["name", "type", "visibility"],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "visibility": {
+          "type": "string",
+          "enum": ["public", "private", "protected", "internal", "exported", "unexported"]
+        },
+        "documentation": {
+          "type": "string"
+        },
+        "tags": {
+          "type": "object",
+          "description": "Language-specific tags (e.g., struct tags in Go)",
+          "additionalProperties": true
+        }
+      }
+    },
+    "function": {
+      "type": "object",
+      "required": ["name", "visibility"],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "receiver": {
+          "type": ["object", "null"],
+          "description": "Method receiver (for methods)",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "type": {
+              "type": "string"
+            }
+          }
+        },
+        "visibility": {
+          "type": "string",
+          "enum": ["public", "private", "protected", "internal", "exported", "unexported"]
+        },
+        "documentation": {
+          "type": "string"
+        },
+        "parameters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/parameter"
+          }
+        },
+        "returns": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/return_value"
+          }
+        },
+        "body_statements": {
+          "type": "array",
+          "description": "Detailed statement-level breakdown",
+          "items": {
+            "$ref": "#/$defs/statement"
+          }
+        },
+        "body_summary": {
+          "type": "string",
+          "description": "Brief summary for simple functions"
+        }
+      }
+    },
+    "parameter": {
+      "type": "object",
+      "required": ["name", "type"],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "default": {
+          "description": "Default value if any"
+        }
+      }
+    },
+    "return_value": {
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        }
+      }
+    },
+    "statement": {
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "assignment",
+            "declaration",
+            "variable_declaration",
+            "method_call",
+            "function_call",
+            "return",
+            "if_statement",
+            "for_loop",
+            "switch_statement",
+            "type_assertion",
+            "append",
+            "function_body"
+          ]
+        },
+        "operation": {
+          "type": "string",
+          "description": "Semantic operation being performed"
+        },
+        "description": {
+          "type": "string",
+          "description": "Human-readable description"
+        },
+        "code": {
+          "type": "string",
+          "description": "Source code representation"
+        },
+        "value": {
+          "type": "string",
+          "description": "Value for return statements"
+        },
+        "condition": {
+          "type": "string",
+          "description": "Condition for control flow statements"
+        },
+        "true_branch": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/statement"
+          }
+        },
+        "false_branch": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/statement"
+          }
+        },
+        "cases": {
+          "type": "array",
+          "description": "Cases for switch statements",
+          "items": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "statements": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/statement"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "variable": {
+      "type": "object",
+      "required": ["name", "type"],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "initialization": {
+          "type": "object",
+          "description": "Initialization expression"
+        },
+        "exported": {
+          "type": "boolean"
+        },
+        "doc": {
+          "type": "string"
+        }
+      }
+    },
+    "constant": {
+      "type": "object",
+      "required": ["name", "type"],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "value": {
+          "description": "Constant value"
+        },
+        "doc": {
+          "type": ["string", "null"]
+        },
+        "exported": {
+          "type": "boolean"
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "lines_of_code": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "blank_lines": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "comment_lines": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "cyclomatic_complexity": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "maintainability_notes": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

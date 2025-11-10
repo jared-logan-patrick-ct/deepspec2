@@ -1,0 +1,7 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/go .
+{
+	"name": "Go devcontainer with Google Cloud SDK",
+	// Use Dockerfile to install Google Cloud SDK
+	"dockerFile": "Dockerfile"
+}
